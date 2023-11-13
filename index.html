@@ -6,30 +6,46 @@
     <script src="p5.js"></script>
     <script src="shortcut.js"></script>
     <script src="polygon.js"></script>
-    <script src="sketch.js"></script>
-    <script src="sketch2.js"></script>
+    <script src="polygonCreatorHelper.js"></script>
 </head>
 <body>
-    <main>
-        <div>
-            Sketch1
-        </div>
-        <div class="container">
-            <div id="canvas1">
-            </div>
-        </div>
-        <div>
-            Sketch2
-        </div>
-        <div class="container">
-            <div id="canvas2">
-            </div>
-        </div>
+<main>
+    <h1>Shortcut hulls</h1>
 
-<!--        <section>-->
-<!--            <script src="sketch2.js"></script>-->
-<!--        </section>-->
+    <h2>
+        Shortcut hull demo
+    </h2>
 
+    <!-- Polygon selector -->
+    <label for="polygon">Choose a polygon to treat: </label>
+    <select name="polygon" id="polygon">
+        <option value="star">Star</option>
+        <option value="bow">Bow</option>
+    </select>
+
+
+
+    <!-- Slider for a choice of lambda -->
+    <div class="slidecontainer">
+        <label for="lambdasketch2">Adjust Lambda to change the Shortcut hull.</label><input type="range" min="0" max="1" value="0.5" step="0.001" class="slider" id="lambdasketch2" style="width: 100%;">
+    </div>
+    <p id="lambda2val">Lambda = 0.5</p>
+
+    <!-- Canvas on which the shortcut hull is computed and drawn -->
+    <div class="container">
+        <div id="canvas2">
+        </div>
+    </div>
+    <script src="shortcuthullsketch.js"></script>
+
+    <!-- Helper to create new polygons-->
+    <div>
+        Polygon creator helper
+    </div>
+    <div class="container">
+        <div id="canvas1">
+        </div>
+    </div>
     </main>
 </body>
 </html>

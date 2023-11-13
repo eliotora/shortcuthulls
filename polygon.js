@@ -61,7 +61,7 @@ class Polygon {
             for (let i = 0; i < this.vertex.length - 1; i++) {
                 sum += this.vertex[i].x * this.vertex[i + 1].y - this.vertex[i + 1].x * this.vertex[i].y;
             }
-            this.area = Math.abs(sum/2);
+            this.area = Math.abs(sum/2/10000);
         }
         return this.area;
     }
@@ -97,8 +97,11 @@ class Polygon {
     }
 
     cost(e, lambda) {
+        // console.log("For edge: [" + e.start.x + ", " + e.start.y + "], [" + e.end.x + ", " + e.end.y + "]");
         if (this.edges.includes(e)) {
-            return lambda * Math.sqrt((e.end.x - e.start.x)**2 + (e.end.y - e.start.y)**2);
+            let cost = lambda * Math.sqrt((e.end.x - e.start.x)**2 + (e.end.y - e.start.y)**2)/100;
+            // console.log("Cost of this edge: " + cost);
+            return cost;
         } else {
             let pocket_vertices = [e.start];
             let pocket_edges = [];
@@ -113,7 +116,9 @@ class Polygon {
             pocket_vertices.push(current)
             pocket_edges.push(new Line(e.end, e.start));
             let pocket = new Polygon(pocket_vertices, pocket_edges);
-            return lambda * (Math.sqrt((e.end.x - e.start.x)**2 + (e.end.y - e.start.y)**2) - length_cost) + (1 - lambda) * pocket.computeArea();
+            let cost = lambda * (Math.sqrt((e.end.x - e.start.x)**2 + (e.end.y - e.start.y)**2) - length_cost)/100 + (1 - lambda) * pocket.computeArea();
+            // console.log("Cost of this edge: " + cost);
+            return cost;
         }
     }
 }
