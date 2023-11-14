@@ -27,10 +27,6 @@ class Vertex {
     setOut(e_out) {
         this.out = [e_out]
     }
-
-    addOut(e) {
-        this.out.push(e);
-    }
 }
 
 class Polygon {
@@ -97,11 +93,8 @@ class Polygon {
     }
 
     cost(e, lambda) {
-        // console.log("For edge: [" + e.start.x + ", " + e.start.y + "], [" + e.end.x + ", " + e.end.y + "]");
         if (this.edges.includes(e)) {
-            let cost = lambda * Math.sqrt((e.end.x - e.start.x)**2 + (e.end.y - e.start.y)**2)/100;
-            // console.log("Cost of this edge: " + cost);
-            return cost;
+            return lambda * Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100;
         } else {
             let pocket_vertices = [e.start];
             let pocket_edges = [];
@@ -116,9 +109,52 @@ class Polygon {
             pocket_vertices.push(current)
             pocket_edges.push(new Line(e.end, e.start));
             let pocket = new Polygon(pocket_vertices, pocket_edges);
-            let cost = lambda * (Math.sqrt((e.end.x - e.start.x)**2 + (e.end.y - e.start.y)**2) - length_cost)/100 + (1 - lambda) * pocket.computeArea();
-            // console.log("Cost of this edge: " + cost);
-            return cost;
+            return lambda * (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100 + (1 - lambda) * pocket.computeArea();
         }
     }
 }
+
+function create_polygon(choice_nbr) {
+    // Import the polygon
+    let file = JSON.parse(polygons[choice_nbr]);
+    let points = [];
+    let lines = [];
+
+    // Create each vertex and edge of the polygon
+    for (let i in file.Points) {
+        points.push(new Vertex(file.Points[i][0], file.Points[i][1]));
+        if (points.length > 1) {
+            let l = new Line(points[i - 1], points[i])
+            lines.push(l);
+            points[i - 1].setOut(l);
+            points[i].setIn(l);
+        }
+    }
+    let l = new Line(points[points.length - 1], points[0])
+    lines.push(l);
+    points[points.length - 1].setOut(l);
+    points[0].setIn(l);
+
+    poly = new Polygon(points, lines);
+
+    // Add pre-computed shortcuts to the polygon structure
+    for (let i in file.Shortcuts) {
+        poly.shortcut = new Line(poly.vertex[file.Shortcuts[i][0]], poly.vertex[file.Shortcuts[i][1]]);
+
+        poly.vertex[file.Shortcuts[i][0]].out.push(poly.shortcuts[i]);
+    }
+
+    // Also add each edge to be a possible shortcut
+    for (let e of this.poly.edges) {
+        poly.shortcut = e;
+    }
+
+    return poly;
+}
+
+star = '{"Points":[[390,148],[263,231],[318,372],[200,277],[82,372],[137,231],[10,148],[161,156],[200,10],[239,156]], "Shortcuts":[[0,2],[2,4],[4,6],[6,8],[8,0]]}'
+bow = '{"Points":[[10,10],[390,10],[127,127],[10,390]], "Shortcuts":[[1,3]]}'
+example1 = '{"Points":[[39,90],[168,76],[90,247],[180,202],[241,253],[262,145],[367,145],[364,313],[29,313]], "Shortcuts":[[1,3],[1,4],[1,5],[1,6],[2,5],[3,5]]}'
+example2 = '{"Points":[[64,62],[152,51],[188,146],[133,195],[199,224],[213,166],[278,138],[208,70],[257,40],[328,126],[359,60],[312,236],[251,354],[189,303],[225,276],[136,265],[122,356],[34,340],[73,262],[38,191],[125,126]], "Shortcuts":[[1,5],[1,6],[1,7],[1,8],[2,4],[2,5],[2,6],[2,7],[3,5],[3,6],[5,7],[8,10],[12,15],[12,16],[13,15],[13,16],[17,19],[19,0]]}'
+
+polygons = [star, bow, example1, example2];

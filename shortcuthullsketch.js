@@ -17,40 +17,8 @@ const shortcuthullsketch = function (p) {
         canvas2.parent("canvas2");
         canvas2.mousePressed(p.click);
 
-        // Import the polygon
-        let file = JSON.parse(example2);
-        let points = [];
-        let lines = [];
-
-        // Create each vertex and edge of the polygon
-        for (let i in file.Points) {
-            points.push(new Vertex(file.Points[i][0], file.Points[i][1]));
-            if (points.length > 1) {
-                let l = new Line(points[i - 1], points[i])
-                lines.push(l);
-                points[i - 1].setOut(l);
-                points[i].setIn(l);
-            }
-        }
-        let l = new Line(points[points.length - 1], points[0])
-        lines.push(l);
-        points[points.length - 1].setOut(l);
-        points[0].setIn(l);
-
-        this.poly = new Polygon(points, lines);
-
-        // Add pre-computed shortcuts to the polygon structure
-        for (let i in file.Shortcuts) {
-            this.poly.shortcut = new Line(this.poly.vertex[file.Shortcuts[i][0]], this.poly.vertex[file.Shortcuts[i][1]]);
-
-            this.poly.vertex[file.Shortcuts[i][0]].out.push(this.poly.shortcuts[i]);
-        }
-        // Also add each edge to be a possible shortcut
-        for (let e of this.poly.edges) {
-            this.poly.shortcut = e;
-            // findShortcuts(p.poly);
-            p.noLoop();
-        }
+        this.poly = create_polygon(2);
+        p.noLoop();
     }
 
     p.draw = function () {
