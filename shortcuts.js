@@ -4,7 +4,7 @@ const shortcuts = function (p) {
         const canvas2 = p.createCanvas(400, 400);
         canvas2.parent("shortcuts");
 
-        this.poly = create_polygon(2);
+        this.poly = create_polygon(document.getElementById("polygon").value);
 
         p.noLoop();
     }
@@ -15,25 +15,26 @@ const shortcuts = function (p) {
         p.stroke(p.color("black"));
 
         // Draw each vertex of the polygon
-        p.strokeWeight(4)
+        p.strokeWeight(6)
         for (let v of this.poly.vertex) {
             p.point(v.x, v.y);
         }
 
-        p.strokeWeight(1);
-        // Draw the possible shortcuts of the polygon
-        p.stroke(p.color("gray"));
-        for (let c of p.poly.shortcuts) {
-            p.line(c.start.x, c.start.y, c.end.x, c.end.y);
-        }
-
-        p.strokeWeight(2);
+        p.strokeWeight(4);
         // Draw each edge if the polygon
         for (let l of this.poly.edges) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
 
+        p.strokeWeight(2);
+        // Draw the possible shortcuts of the polygon
+        p.stroke(p.color("red"));
+        for (let c of p.poly.shortcuts) {
+            p.line(c.start.x, c.start.y, c.end.x, c.end.y);
+        }
     }
+
+    p.change_poly = change_poly;
 }
 
 star = '{"Points":[[390,148],[263,231],[318,372],[200,277],[82,372],[137,231],[10,148],[161,156],[200,10],[239,156]], "Shortcuts":[[0,2],[2,4],[4,6],[6,8],[8,0]]}'

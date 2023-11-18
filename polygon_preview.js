@@ -4,7 +4,7 @@ const polygon_preview = function (p) {
         const canvas2 = p.createCanvas(400, 400);
         canvas2.parent("polygon_preview");
 
-        this.poly = create_polygon(2);
+        this.poly = create_polygon(document.getElementById("polygon").value);
         p.noLoop();
     }
 
@@ -14,17 +14,19 @@ const polygon_preview = function (p) {
         p.stroke(p.color("black"));
 
         // Draw each vertex of the polygon
-        p.strokeWeight(4)
+        p.strokeWeight(6)
         for (let v of this.poly.vertex) {
             p.point(v.x, v.y);
         }
 
         // Draw each edge if the polygon
-        p.strokeWeight(2);
+        p.strokeWeight(4);
         for (let l of this.poly.edges) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
     }
+
+    p.change_poly = change_poly;
 }
 
 star = '{"Points":[[390,148],[263,231],[318,372],[200,277],[82,372],[137,231],[10,148],[161,156],[200,10],[239,156]], "Shortcuts":[[0,2],[2,4],[4,6],[6,8],[8,0]]}'

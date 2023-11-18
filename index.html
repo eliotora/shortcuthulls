@@ -5,23 +5,50 @@
     <title>Main page</title>
     <script src="p5.js"></script>
     <script src="shortcut.js"></script>
-    <script src="polygon.js"></script>
     <script src="polygonCreatorHelper.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 <main>
     <h1>Shortcut hulls</h1>
+    <p>
+        The idea behind shortcut hulls is to do a simplification of the given polygon in order to, for example, reduce its size (in terms of space complexity).
+        Say you want to use a map of Belgium, the frontiers are given to you in the form of a polygon; but the polygon contains a lot of points and can take more time (and space) than necessary for you use.
+        Using shortcut hulls you can get a simplified version of you polygon that keeps most of the geometrical features of the original.
+    </p>
 
+    <p>
+        First lets define what is a shortcut for a polygon P.
+        Generally a shortcut is defined as any edge between two vertices of the polygon,
+        here we will restrict our view to crossing-free shortcuts, i.e. shortcuts that do not cross the interior of the polygon.
+        In the end the algorithm can be used with any kind of shortcuts so the restrictions depend on the application.
+    </p>
+
+    <p>
+        The shortcut hull will produce a polygon that minimize the following function:
+    </p>
+    $$c(Q) = \lambda \cdot c_P(Q) + (1-\lambda)\cdot c_A(Q)$$
+    <p>
+        where \(Q\) is a given shortcut hull, \(c\) is the cost function, \(c_P\) is the cost of the perimeter of the polygon, \(c_A\) is the cost of the area of the polygon.
+        Finally \(\lambda\) is a constant parameter used to specify the relative important of perimeter to area.
+    </p>
+
+    <h2>Shortcut Hulls without holes</h2>
+    <p>
+        We can compute a shortcut hull without holes in \(O(n^2)\) time, the problem can be simplified to a shortest path in a directed acyclic graph which can be solved in \(O(n)\) time if the polygon is weakly simple and \(O(n^2)\) otherwise.
+    </p>
     <h2>
         Shortcut hull demo
     </h2>
-
+    <p>
+        In this section you can choose a polygon, visualize the admissible shortcuts of the polygon, and see a dynamic computation of the shortcut hull with your choice of \(lambda\).
+    </p>
     <!-- Polygon selector -->
     <label for="polygon">Choose a polygon to treat: </label>
     <select name="polygon" id="polygon">
-        <option value="star">Star</option>
-        <option value="bow">Bow</option>
     </select>
+    <script src="polygon.js"></script>
 
     <div class="container">
         <div id="polygon_preview"></div>
@@ -29,17 +56,23 @@
     <script src="polygon_preview.js"></script>
 
     <h3>
-        All possible shortcuts for the polygon
+        All admissible shortcuts for the polygon
     </h3>
+    <p>
+        Those are the admissible shortcuts with respect to the restriction given before.
+    </p>
 
     <div class="container">
         <div id="shortcuts"></div>
     </div>
     <script src="shortcuts.js"></script>
 
+    <h3>
+        Dynamic computation of the shortcut hull for the given \(\lambda\)
+    </h3>
     <!-- Slider for a choice of lambda -->
     <div class="slidecontainer">
-        <label for="lambdasketch2">Adjust Lambda to change the Shortcut hull.</label><input type="range" min="0" max="1" value="0.5" step="0.001" class="slider" id="lambdasketch2" style="width: 100%;">
+        <label for="lambdasketch2">Adjust \(\lambda\) to change the Shortcut hull.</label><input type="range" min="0" max="1" value="0.5" step="0.001" class="slider" id="lambdasketch2" style="width: 100%;">
     </div>
     <p id="lambda2val">Lambda = 0.5</p>
 
@@ -50,6 +83,13 @@
     </div>
     <script src="shortcuthullsketch.js"></script>
 
+    <h2>
+        Shortcut hulls with holes
+    </h2>
+    <p>
+        Todo explain and implement it.
+    </p>
+
     <!-- Helper to create new polygons-->
     <div>
         Polygon creator helper
@@ -58,6 +98,9 @@
         <div id="canvas1">
         </div>
     </div>
+    <p>
+        Bonerath, Annika, Jan-Henrik Haunert, Joseph S. B. Mitchell, et Benjamin Niedermann. 2023. « Shortcut hulls: Vertex-restricted outer simplifications of polygons ». Computational Geometry 112 (juin): 101983. <a href="https://doi.org/10.1016/j.comgeo.2023.101983">https://doi.org/10.1016/j.comgeo.2023.101983</a>.
+    </p>
     </main>
 </body>
 </html>
