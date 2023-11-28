@@ -18,14 +18,16 @@ class Vertex {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+        this.in = [];
+        this.out = [];
     }
 
-    setIn(e_in) {
-        this.in = e_in
+    addIn(e_in) {
+        this.in.push(e_in);
     }
 
-    setOut(e_out) {
-        this.out = [e_out]
+    addOut(e_out) {
+        this.out.push(e_out);
     }
 }
 
@@ -74,11 +76,11 @@ class Polygon {
         let sc_hull = [];
 
         let current_v = v_top;
-        let best_e = current_v.out[0];
+        let best_e = current_v.outs[0];
         while (best_e.end !== v_top) {
-            best_e = current_v.out[0];
-            let best_e_cost = this.cost(current_v.out[0], lambda)
-            for (let e of current_v.out) {
+            best_e = current_v.outs[0];
+            let best_e_cost = this.cost(current_v.outs[0], lambda)
+            for (let e of current_v.outs) {
                 let ecost = this.cost(e, lambda);
                 if (ecost < best_e_cost) {
                     best_e = e;
@@ -101,10 +103,10 @@ class Polygon {
             let current = e.start;
             let length_cost = 0;
             while (current !== e.end) {
-                pocket_edges.push(current.out[0])
+                pocket_edges.push(current.outs[0])
                 pocket_vertices.push(current);
-                length_cost += Math.sqrt((current.x - current.out[0].end.x)**2 + (current.y - current.out[0].end.y)**2);
-                current = current.out[0].end;
+                length_cost += Math.sqrt((current.x - current.outs[0].end.x)**2 + (current.y - current.outs[0].end.y)**2);
+                current = current.outs[0].end;
             }
             pocket_vertices.push(current)
             pocket_edges.push(new Line(e.end, e.start));
@@ -126,14 +128,14 @@ function create_polygon(choice_nbr) {
         if (points.length > 1) {
             let l = new Line(points[i - 1], points[i])
             lines.push(l);
-            points[i - 1].setOut(l);
-            points[i].setIn(l);
+            points[i - 1].addOut(l);
+            points[i].addIn(l);
         }
     }
     let l = new Line(points[points.length - 1], points[0])
     lines.push(l);
-    points[points.length - 1].setOut(l);
-    points[0].setIn(l);
+    points[points.length - 1].addOut(l);
+    points[0].addIn(l);
 
     poly = new Polygon(points, lines);
 
@@ -141,7 +143,7 @@ function create_polygon(choice_nbr) {
     for (let i in file.Shortcuts) {
         poly.shortcut = new Line(poly.vertex[file.Shortcuts[i][0]], poly.vertex[file.Shortcuts[i][1]]);
 
-        poly.vertex[file.Shortcuts[i][0]].out.push(poly.shortcuts[i]);
+        poly.vertex[file.Shortcuts[i][0]].addOut(poly.shortcuts[i]);
     }
 
     // Also add each edge to be a possible shortcut
@@ -171,6 +173,8 @@ poly_selector.addEventListener("change", function() {
     polygon_scketch.change_poly();
     shortcut_sketch.change_poly();
     schullsketch.change_poly();
+    box_donut_sketch.change_poly();
+    triangulation_sketch.change_poly();
 });
 
 function change_poly() {

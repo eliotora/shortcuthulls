@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <title>Main page</title>
     <script src="p5.js"></script>
-    <script src="shortcut.js"></script>
+    <script src="geometry_tools/shortcut.js"></script>
     <script src="polygonCreatorHelper.js"></script>
+    <script src="geometry_tools/sliced_donut.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="geometry_tools/triangle_tree.js"></script>
+    <script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script> <!-- From https://github.com/mapbox/delaunator Not used-->
+    <script src="https://unpkg.com/earcut@2.2.4/dist/earcut.dev.js"></script> <!-- https://github.com/mapbox/earcut -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
@@ -48,12 +52,12 @@
     <label for="polygon">Choose a polygon to treat: </label>
     <select name="polygon" id="polygon">
     </select>
-    <script src="polygon.js"></script>
+    <script src="geometry_tools/polygon.js"></script>
 
     <div class="container">
         <div id="polygon_preview"></div>
     </div>
-    <script src="polygon_preview.js"></script>
+    <script src="no_holes/polygon_preview.js"></script>
 
     <h3>
         All admissible shortcuts for the polygon
@@ -65,7 +69,7 @@
     <div class="container">
         <div id="shortcuts"></div>
     </div>
-    <script src="shortcuts.js"></script>
+    <script src="no_holes/shortcuts.js"></script>
 
     <h3>
         Dynamic computation of the shortcut hull for the given \(\lambda\)
@@ -81,7 +85,7 @@
         <div id="canvas2">
         </div>
     </div>
-    <script src="shortcuthullsketch.js"></script>
+    <script src="no_holes/shortcuthullsketch.js"></script>
 
     <h2>
         Shortcut hulls with holes
@@ -89,6 +93,18 @@
     <p>
         Todo explain and implement it.
     </p>
+    <div class="container">
+        <div id="containing_box_and_donut">
+        </div>
+    </div>
+    <script src="holes/containing_box_and_donut.js"></script>
+
+    <div class="container">
+        <div id="triangulation">
+        </div>
+    </div>
+    <script src="holes/triangulation.js"></script>
+
 
     <!-- Helper to create new polygons-->
     <div>
