@@ -1,18 +1,26 @@
-const triangulation = function (p) {
-    let max_lvl = 0
+const shortcuthullholes = function (p) {
+    const lambda_slider = document.getElementById("lambdasketch");
+    const lambda_out = document.getElementById("lambdaval");
+    let lambda = 0.5;
+
+    lambda_slider.oninput = function() {
+        lambda_out.innerHTML = "Lambda = " + this.value;
+        lambda = this.value;
+        p.click();
+    }
+
     p.setup = function () {
-        max_lvl = -1
         const canvas = p.createCanvas(400,400);
-        canvas.parent("triangulation");
+        canvas.parent("shortcuthullholes");
 
         this.poly = create_polygon(document.getElementById("polygon").value);
         this.box = create_box(canvas.width, canvas.height);
         this.sliced_donut = new Sliced_donut(this.box, this.poly);
 
         this.triangles = triangle_tree(this.sliced_donut);
+
         // this.triangles.print()
-        // p.noLoop();
-        p.mouseClicked = function () {max_lvl++;}
+        p.noLoop();
     }
 
     p.draw = function () {
@@ -33,8 +41,6 @@ const triangulation = function (p) {
         for (let l of this.poly.edges) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
-        p.strokeWeight(1);
-        p.text("(" + p.round(p.mouseX) + ", " + p.round(p.mouseY) + ")", p.mouseX + 10, p.mouseY - 10);
 
         p.strokeWeight(2);
         p.stroke(p.color("gray"));
@@ -46,6 +52,14 @@ const triangulation = function (p) {
         // p.ellipse(this.sliced_donut.vertex[12].x, this.sliced_donut.vertex[12].y, 100)
     }
 
+    p.click = function () {
+        let A = new Map(), I = new Map()
+        this.triangles.compute_costs(this.poly, A, I, lambda);
+        this.triangles.active = false
+        this.triangles.activate(lambda, this.poly)
+        this.draw();
+    }
+
     p.change_poly = change_poly;
 }
-const triangulation_sketch = new p5(triangulation);
+const shortcuthullholes_sketch = new p5(shortcuthullholes);

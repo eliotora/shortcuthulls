@@ -1,5 +1,6 @@
 class Sliced_donut {
     constructor(box, poly) {
+        this.polygon = poly;
 
         // Find top most vertex of poly
         let top_v = poly.vertex[0];
@@ -30,7 +31,11 @@ class Sliced_donut {
 
         this.hole = [5, this.vertex.length-1]
         this.poly = new Polygon(this.vertex, this.edges);
-        this.e_star = this.edges[this.edges.length-1];
+        // this.e_star = this.edges[this.edges.length-1];
+        this.e_star = this.edges[4];
+        for (let s of poly.shortcuts) {
+            this.edges.push(s);
+        }
     }
 }
 

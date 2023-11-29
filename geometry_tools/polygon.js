@@ -76,11 +76,11 @@ class Polygon {
         let sc_hull = [];
 
         let current_v = v_top;
-        let best_e = current_v.outs[0];
+        let best_e = current_v.out[0];
         while (best_e.end !== v_top) {
-            best_e = current_v.outs[0];
-            let best_e_cost = this.cost(current_v.outs[0], lambda)
-            for (let e of current_v.outs) {
+            best_e = current_v.out[0];
+            let best_e_cost = this.cost(current_v.out[0], lambda)
+            for (let e of current_v.out) {
                 let ecost = this.cost(e, lambda);
                 if (ecost < best_e_cost) {
                     best_e = e;
@@ -94,24 +94,64 @@ class Polygon {
         return sc_hull;
     }
 
-    cost(e, lambda) {
+    // cost(e, lambda) {
+    //     if (this.edges.includes(e)) {
+    //         console.log(lambda * Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100, lambda * this.cp(e))
+    //         return lambda * Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100;
+    //     } else {
+    //         let pocket_vertices = [e.start];
+    //         let pocket_edges = [];
+    //         let current = e.start;
+    //         let length_cost = 0;
+    //         while (current !== e.end) {
+    //             pocket_edges.push(current.out[0])
+    //             pocket_vertices.push(current);
+    //             length_cost += Math.sqrt((current.x - current.out[0].end.x)**2 + (current.y - current.out[0].end.y)**2);
+    //             current = current.out[0].end;
+    //         }
+    //         pocket_vertices.push(current)
+    //         pocket_edges.push(new Line(e.end, e.start));
+    //         let pocket = new Polygon(pocket_vertices, pocket_edges);
+    //         console.log(lambda * (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100 + (1 - lambda) * pocket.computeArea(), lambda * (this.cp(e)-length_cost/100) + (1 - lambda) * this.ca(e))
+    //         return lambda * (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100 + (1 - lambda) * pocket.computeArea();
+    //     }
+    // }
+
+    cp(e) {
+
         if (this.edges.includes(e)) {
-            return lambda * Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100;
-        } else {
-            let pocket_vertices = [e.start];
-            let pocket_edges = [];
+            return Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100;
+        } else if (this.shortcuts.includes(e)){
             let current = e.start;
             let length_cost = 0;
             while (current !== e.end) {
-                pocket_edges.push(current.outs[0])
-                pocket_vertices.push(current);
-                length_cost += Math.sqrt((current.x - current.outs[0].end.x)**2 + (current.y - current.outs[0].end.y)**2);
-                current = current.outs[0].end;
+                length_cost += Math.sqrt((current.x - current.out[0].end.x) ** 2 + (current.y - current.out[0].end.y) ** 2);
+                current = current.out[0].end;
             }
-            pocket_vertices.push(current)
-            pocket_edges.push(new Line(e.end, e.start));
-            let pocket = new Polygon(pocket_vertices, pocket_edges);
-            return lambda * (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100 + (1 - lambda) * pocket.computeArea();
+            return (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100;
+        } else {return Infinity}
+    }
+
+    cA(e) {
+        let pocket_vertices = [e.start];
+        let pocket_edges = [];
+        let current = e.start;
+        while (current !== e.end) {
+            pocket_edges.push(current.out[0])
+            pocket_vertices.push(current);
+            current = current.out[0].end;
+        }
+        pocket_vertices.push(current)
+        pocket_edges.push(new Line(e.end, e.start));
+        let pocket = new Polygon(pocket_vertices, pocket_edges);
+        return pocket.computeArea();
+    }
+
+    cost(e, lambda) {
+        if (this.edges.includes(e)) {
+            return lambda * this.cp(e);
+        } else {
+            return lambda * this.cp(e) + (1 - lambda) * this.cA(e);
         }
     }
 }
@@ -175,6 +215,7 @@ poly_selector.addEventListener("change", function() {
     schullsketch.change_poly();
     box_donut_sketch.change_poly();
     triangulation_sketch.change_poly();
+    shortcuthullholes_sketch.change_poly();
 });
 
 function change_poly() {

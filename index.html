@@ -105,6 +105,16 @@
     </div>
     <script src="holes/triangulation.js"></script>
 
+    <div class="slidecontainer">
+        <label for="lambdasketch">Adjust \(\lambda\) to change the Shortcut hull.</label><input type="range" min="0" max="1" value="0.5" step="0.001" class="slider" id="lambdasketch" style="width: 100%;">
+    </div>
+    <p id="lambdaval">Lambda = 0.5</p>
+    <div class="container">
+        <div id="shortcuthullholes">
+        </div>
+    </div>
+    <script src="holes/shortcuthullholes.js"></script>
+
 
     <!-- Helper to create new polygons-->
     <div>
