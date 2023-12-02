@@ -1,4 +1,4 @@
-function triangle_tree(donut) {
+function triangle_tree(donut, e_star, hole) {
     let coord = [];
     for (let v of donut.vertex) {
         coord.push(v.x);
@@ -6,24 +6,58 @@ function triangle_tree(donut) {
     }
 
     function new_edge_from_triangulation(v1, v2) {
-        let l = new Line(v1, v2);
+        console.log(v1.x, v1.y, v2.x, v2.y)
+        let temp = v1;
+        let flag = false;
+        while (temp !== v2) {
+            temp = temp.out[0].end
+            if (temp === e_star) {
+                flag = true;
+                break;
+            }
+        }
+
+        let l = flag? new Line(v1, v2) : new Line(v2, v1);
         donut.edges.push(l);
         return l;
     }
 
-    let tri = earcut(coord, donut.hole);
-    let triangles = []
+    // Do triangulation
+    let tri = earcut(coord, hole);
+    console.log(tri)
+    console.log(donut.vertex[13], donut.vertex[14], donut.vertex[15])
+    let triangles = [];
+
     for (let i = 0; i < tri.length; i+=3) {
-        let e1 = donut.edges.find(e => (e.start === donut.vertex[tri[i]] || e.start === donut.vertex[tri[i+1]])
-            && (e.end === donut.vertex[tri[i]] || e.end === donut.vertex[tri[i+1]])),
-            e2 = donut.edges.find(e => (e.start === donut.vertex[tri[i+1]] || e.start === donut.vertex[tri[i+2]])
-                && (e.end === donut.vertex[tri[i+1]] || e.end === donut.vertex[tri[i+2]])),
-            e3 = donut.edges.find(e => (e.start === donut.vertex[tri[i]] || e.start === donut.vertex[tri[i+2]])
-                && (e.end === donut.vertex[tri[i]] || e.end === donut.vertex[tri[i+2]]))
+        // Triangulation given by a list of triangles [x, y, z] where x, y, z are index of the vertices in coord
+        // We need to correspond the edges to the edges we already had
+        // Each edge of a triangle can be an edge of the donut, and shortcut of the polygon or a new edge
+
+
+        // First look into edges of the donut
+        let e1 = donut.edges.find(e => (((e.start.x === donut.vertex[tri[i]].x && e.start.y === donut.vertex[tri[i]].y) && (e.end.x === donut.vertex[tri[i+1]].x && e.end.y === donut.vertex[tri[i+1]].y))
+                || ((e.start.x === donut.vertex[tri[i+1]].x && e.start.y === donut.vertex[tri[i+1]].y) || (e.end.x === donut.vertex[tri[i]].x && e.end.y === donut.vertex[tri[i]].y)))),
+            e2 = donut.edges.find(e => (((e.start.x === donut.vertex[tri[i+1]].x && e.start.y === donut.vertex[tri[i+1]].y) && (e.end.x === donut.vertex[tri[i+2]].x && e.end.y === donut.vertex[tri[i+2]].y))
+                || ((e.start.x === donut.vertex[tri[i+2]].x && e.start.y === donut.vertex[tri[i+2]].y) || (e.end.x === donut.vertex[tri[i+1]].x && e.end.y === donut.vertex[tri[i+1]].y)))),
+            e3 = donut.edges.find(e => (((e.start.x === donut.vertex[tri[i+2]].x && e.start.y === donut.vertex[tri[i+2]].y) && (e.end.x === donut.vertex[tri[i]].x && e.end.y === donut.vertex[tri[i]].y))
+                || ((e.start.x === donut.vertex[tri[i]].x && e.start.y === donut.vertex[tri[i]].y) || (e.end.x === donut.vertex[tri[i+2]].x && e.end.y === donut.vertex[tri[i+2]].y))))
+        console.log(e1,e2,e3)
+        // Then look into shortcuts
+        e1 = e1 ? e1 : donut.shortcuts.find(e => (((e.start.x === donut.vertex[tri[i]].x && e.start.y === donut.vertex[tri[i]].y) && (e.end.x === donut.vertex[tri[i+1]].x && e.end.y === donut.vertex[tri[i+1]].y))
+            || ((e.start.x === donut.vertex[tri[i+1]].x && e.start.y === donut.vertex[tri[i+1]].y) || (e.end.x === donut.vertex[tri[i]].x && e.end.y === donut.vertex[tri[i]].y))))
+        e2 = e2 ? e2 : donut.shortcuts.find(e => (((e.start.x === donut.vertex[tri[i+1]].x && e.start.y === donut.vertex[tri[i+1]].y) && (e.end.x === donut.vertex[tri[i+2]].x && e.end.y === donut.vertex[tri[i+2]].y))
+            || ((e.start.x === donut.vertex[tri[i+2]].x && e.start.y === donut.vertex[tri[i+2]].y) || (e.end.x === donut.vertex[tri[i+1]].x && e.end.y === donut.vertex[tri[i+1]].y))))
+        e3 = e3 ? e3 : donut.shortcuts.find(e => (((e.start.x === donut.vertex[tri[i+2]].x && e.start.y === donut.vertex[tri[i+2]].y) && (e.end.x === donut.vertex[tri[i]].x && e.end.y === donut.vertex[tri[i]].y))
+            || ((e.start.x === donut.vertex[tri[i]].x && e.start.y === donut.vertex[tri[i]].y) || (e.end.x === donut.vertex[tri[i+2]].x && e.end.y === donut.vertex[tri[i+2]].y))))
+        console.log(e1,e2, e3)
+        // If no edge was found make a new one
 
         e1 = e1 ? e1 : new_edge_from_triangulation(donut.vertex[tri[i]], donut.vertex[tri[i+1]])
         e2 = e2 ? e2 : new_edge_from_triangulation(donut.vertex[tri[i+1]], donut.vertex[tri[i+2]])
         e3 = e3 ? e3 : new_edge_from_triangulation(donut.vertex[tri[i+2]], donut.vertex[tri[i]])
+        console.log(e1,e2, e3)
+
+        // Create new triangle
         triangles.push(new Triangle([
             donut.vertex[tri[i]],
             donut.vertex[tri[i+1]],
@@ -33,25 +67,27 @@ function triangle_tree(donut) {
             )
         )
     }
-    let t = triangles.find((element)  => element.vertices.includes(donut.e_star.start) && element.vertices.includes(donut.e_star.end));
+
+    // Find triangle linked to e_star
+    let t = triangles.find((element) => element.vertices.includes(e_star.start) && element.vertices.includes(e_star.end));
+    console.log(triangles, e_star)
+
     let temp = t.edges.slice()
-    temp.splice(t.edges.indexOf(donut.e_star), 1)
-    let first = new TreeNode(t, donut.e_star, temp)
+    temp.splice(t.edges.indexOf(e_star), 1)
+    let first = new TreeNode(t, e_star, temp)
+    console.log(first)
     triangles.splice(triangles.indexOf(t), 1);
 
-    find_children(first, donut.e_star, 0);
+    find_children(first, e_star, 0);
 
     function find_children(current, e_in, i) {
-        if (i === 14) {
-            return
-        }
         // console.log("Level: ", i, current)
         // find last point of the current triangle
         let last = current.vertices.find(v => v !== e_in.start && v !== e_in.end);
 
         // Triangle possibilities on one side
         let possibilitiesL = []
-        if (!donut.polygon.edges.includes(current.e1)) {
+        if (!donut.edges.includes(current.e1)) {
             if (triangles.find(v => v.edges.includes(current.e1))) {
                 possibilitiesL.push(triangles.find(v => v.edges.includes(current.e1)));
             }
@@ -89,7 +125,7 @@ function triangle_tree(donut) {
         }
         // On the other side
         let possibilitiesR = [];
-        if (!donut.polygon.edges.includes(current.e2)) {
+        if (!donut.edges.includes(current.e2)) {
             if (triangles.find(v => v.edges.includes(current.e2))) {
                 possibilitiesR.push(triangles.find(v => v.edges.includes(current.e2)));
             }
@@ -128,7 +164,6 @@ function triangle_tree(donut) {
         }
         // console.log("Level: ", i, current, possibilitiesL, possibilitiesR)
     }
-
 
     return first;
 }
@@ -169,7 +204,7 @@ class TreeNode {
     }
 
     print(lvl=0) {
-        console.log(this.x_cost, this.y_cost, lvl);
+        console.log(this, lvl);
         for (let c of this.childrenL) {
             console.log("Left");
             c.print(lvl+1);

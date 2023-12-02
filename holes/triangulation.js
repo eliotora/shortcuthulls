@@ -7,10 +7,14 @@ const triangulation = function (p) {
 
         this.poly = create_polygon(document.getElementById("polygon").value);
         this.box = create_box(canvas.width, canvas.height);
-        this.sliced_donut = new Sliced_donut(this.box, this.poly);
+        // this.sliced_donut = new Sliced_donut(this.box, this.poly);
+        let donut_e_hole = make_sliced_donut(this.box, this.poly);
+        this.sliced_donut = donut_e_hole[0];
+        this.e_star = donut_e_hole[1];
+        this.hole = donut_e_hole[2];
 
-        this.triangles = triangle_tree(this.sliced_donut);
-        // this.triangles.print()
+        this.triangles = triangle_tree(this.sliced_donut, this.e_star, this.hole);
+        this.triangles.print()
         // p.noLoop();
         p.mouseClicked = function () {max_lvl++;}
     }
@@ -21,6 +25,7 @@ const triangulation = function (p) {
         p.stroke(p.color("red"));
         p.strokeWeight(4)
         p.fill(124,185,232)
+        this.triangles.active = true;
         this.triangles.draw(p, 0);
         p.noFill();
 

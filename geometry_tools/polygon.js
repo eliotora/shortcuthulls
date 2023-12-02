@@ -20,6 +20,7 @@ class Vertex {
         this.y = y;
         this.in = [];
         this.out = [];
+        this.shortcuts= [];
     }
 
     addIn(e_in) {
@@ -28,6 +29,13 @@ class Vertex {
 
     addOut(e_out) {
         this.out.push(e_out);
+    }
+    addShortcut(s) {
+        this.shortcuts.push(s);
+    }
+
+    copy() {
+        return new Vertex(this.x, this.y);
     }
 }
 
@@ -93,29 +101,6 @@ class Polygon {
 
         return sc_hull;
     }
-
-    // cost(e, lambda) {
-    //     if (this.edges.includes(e)) {
-    //         console.log(lambda * Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100, lambda * this.cp(e))
-    //         return lambda * Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) / 100;
-    //     } else {
-    //         let pocket_vertices = [e.start];
-    //         let pocket_edges = [];
-    //         let current = e.start;
-    //         let length_cost = 0;
-    //         while (current !== e.end) {
-    //             pocket_edges.push(current.out[0])
-    //             pocket_vertices.push(current);
-    //             length_cost += Math.sqrt((current.x - current.out[0].end.x)**2 + (current.y - current.out[0].end.y)**2);
-    //             current = current.out[0].end;
-    //         }
-    //         pocket_vertices.push(current)
-    //         pocket_edges.push(new Line(e.end, e.start));
-    //         let pocket = new Polygon(pocket_vertices, pocket_edges);
-    //         console.log(lambda * (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100 + (1 - lambda) * pocket.computeArea(), lambda * (this.cp(e)-length_cost/100) + (1 - lambda) * this.ca(e))
-    //         return lambda * (Math.sqrt((e.end.x - e.start.x) ** 2 + (e.end.y - e.start.y) ** 2) - length_cost) / 100 + (1 - lambda) * pocket.computeArea();
-    //     }
-    // }
 
     cp(e) {
 

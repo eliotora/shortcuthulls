@@ -39,6 +39,64 @@ class Sliced_donut {
     }
 }
 
+function make_sliced_donut(box, poly) {
+    // Find top most vertex of poly
+    let top_v = poly.vertex[0];
+    for (let v of poly.vertex) {
+        if (v.y < top_v.y) {
+            top_v = v;
+        }
+    }
+    // First the box
+    let vertex = box.vertex;
+    let edges = box.edges;
+    vertex.push(box.vertex[0].copy());
+    edges.push(new Line(vertex[vertex.length-2], vertex[vertex.length-1]));
+    vertex[vertex.length-2].out.push(edges[edges.length-1])
+    vertex[vertex.length-1].in.push(edges[edges.length-1])
+    // Ingoing link with polygon
+    vertex.push(top_v.copy());
+    edges.push(new Line(vertex[vertex.length-2], vertex[vertex.length-1]));
+    vertex[vertex.length-2].out.push(edges[edges.length-1])
+    vertex[vertex.length-1].in.push(edges[edges.length-1])
+    // Polygon but backward
+    let currentv = top_v.in[0].start;
+    let current_copy = currentv.copy()
+    edges.push(new Line(vertex[vertex.length-1], current_copy));
+    vertex[vertex.length-1].out.push(edges[edges.length-1])
+    current_copy.in.push(edges[edges.length-1])
+    while (currentv !== top_v) {
+        vertex.push(current_copy);
+        currentv = currentv.in[0].start;
+        current_copy = currentv.copy()
+        edges.push(new Line(vertex[vertex.length-1], current_copy));
+        current_copy.in.push(edges[edges.length-1])
+        vertex[vertex.length-1].out.push(edges[edges.length-1])
+    }
+    vertex.push(vertex[5]);
+    // Outgoing link with polygon
+    edges.push(new Line(vertex[vertex.length-1], vertex[0]));
+    vertex[vertex.length-1].out.push(edges[edges.length-1])
+    vertex[0].in.push(edges[edges.length-1])
+
+    let hole = [5, vertex.length-1]
+    let donut = new Polygon(vertex, edges);
+    let e_star = edges[edges.length-1];
+
+    for (let s of poly.shortcuts) {
+        let start = donut.vertex.find(e => e.x === s.start.x && e.y === s.start.y)
+        let end = donut.vertex.find(e => e.x === s.end.x && e.y === s.end.y)
+        let s_new = new Line(start, end)
+        start.out.push(s_new)
+        end.in.push(s_new)
+        donut.shortcuts.push(s_new)
+
+    }
+
+    console.log("Donut created")
+    return [donut, e_star, hole];
+}
+
 function create_box(width, height) {
     let vertices = [
         new Vertex(0, 0),
@@ -50,16 +108,16 @@ function create_box(width, height) {
         new Line(vertices[0], vertices[1]),
         new Line(vertices[1], vertices[2]),
         new Line(vertices[2], vertices[3]),
-        new Line(vertices[3], vertices[0])
+        // new Line(vertices[3], vertices[0])
     ]
-    vertices[0].in = [edges[3]];
+    // vertices[0].in = [edges[3]];
     vertices[1].in = [edges[0]];
     vertices[2].in = [edges[1]];
     vertices[3].in = [edges[2]];
     vertices[0].out = [edges[0]];
     vertices[1].out = [edges[1]];
     vertices[2].out = [edges[2]];
-    vertices[3].out = [edges[3]];
+    // vertices[3].out = [edges[3]];
 
     return new Polygon(vertices, edges);
 }

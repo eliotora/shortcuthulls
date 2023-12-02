@@ -9,7 +9,10 @@ const containing_box_and_donut = function (p) {
                     new Vertex(canvas.width, canvas.height),
                     new Vertex(0, canvas.height)];
         this.box = new Polygon(this.box);
-        this.sliced_donut = new Sliced_donut(this.box, this.poly);
+        let donut_e_hole = make_sliced_donut(this.box, this.poly);
+        this.sliced_donut = donut_e_hole[0];
+        this.e_star = donut_e_hole[1];
+        this.hole = donut_e_hole[2];
 
         p.noLoop();
     }
@@ -39,9 +42,12 @@ const containing_box_and_donut = function (p) {
         for (let l of this.sliced_donut.edges) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
+        for (let l of this.sliced_donut.shortcuts) {
+            p.line(l.start.x, l.start.y, l.end.x, l.end.y);
+        }
 
         p.stroke(p.color("red"));
-        p.line(p.sliced_donut.e_star.start.x, p.sliced_donut.e_star.start.y, p.sliced_donut.e_star.end.x, p.sliced_donut.e_star.end.y)
+        p.line(this.e_star.start.x, this.e_star.start.y, this.e_star.end.x, this.e_star.end.y)
     }
 
     p.change_poly = change_poly;

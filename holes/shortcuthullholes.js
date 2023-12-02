@@ -15,9 +15,13 @@ const shortcuthullholes = function (p) {
 
         this.poly = create_polygon(document.getElementById("polygon").value);
         this.box = create_box(canvas.width, canvas.height);
-        this.sliced_donut = new Sliced_donut(this.box, this.poly);
+        // this.sliced_donut = new Sliced_donut(this.box, this.poly);
+        let donut_e_hole = make_sliced_donut(this.box, this.poly);
+        this.sliced_donut = donut_e_hole[0];
+        this.e_star = donut_e_hole[1];
+        this.hole = donut_e_hole[2];
 
-        this.triangles = triangle_tree(this.sliced_donut);
+        this.triangles = triangle_tree(this.sliced_donut, this.e_star, this.hole);
 
         // this.triangles.print()
         p.noLoop();
