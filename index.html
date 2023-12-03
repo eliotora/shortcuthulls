@@ -219,11 +219,12 @@
     $$x_{\Delta} = \sum_{i \in \{1,2\}} \min\{A[e_i], I[e_i] + \lambda c_p(e_i)\}$$
     $$y_{\Delta} = \sum_{i \in \{1,2\}} \min\{A[e_i]  + \lambda c_p(e_i), I[e_i]\}$$
 
-    <img src="images/A.png" alt="Equations for the table A" style="width:400px;height:100px;">
+    <img src="images/A.png" alt="Equations for the table A" style="width:420px;height:100px;">
     <img src="images/I.png" alt="Equations for the table I" style="width:400px;height:80px;">
 
     <p>
-        By computing those values for each triangle of the tree bottom-up we should be capable of creating a unique shortcut hull with holes of the polygon for a given value of \(\lambda\).
+        By computing those values for each triangle of the tree bottom-up we should be capable of creating a unique shortcut hull with holes of the polygon for a given value of \(\lambda\).<br>
+        Here is the result of our implementation, it doesn't work as intended but different shortcut hulls with holes will be displayed for small values of \(\lambda\). It won't work at all with the polygon <i>tree</i> certainly because of its shape.
     </p>
 
     <div class="slidecontainer">
@@ -236,17 +237,37 @@
     </div>
     <script src="holes/shortcuthullholes.js"></script>
 
+    <h2>
+        Example of application of the shortcut hull without holes.
+    </h2>
 
-    <!-- Helper to create new polygons-->
-    <div>
-        Polygon creator helper
-    </div>
-    <div class="container">
-        <div id="canvas1">
-        </div>
-    </div>
     <p>
-        Bonerath, Annika, Jan-Henrik Haunert, Joseph S. B. Mitchell, et Benjamin Niedermann. 2023. « Shortcut hulls: Vertex-restricted outer simplifications of polygons ». Computational Geometry 112 (juin): 101983. <a href="https://doi.org/10.1016/j.comgeo.2023.101983">https://doi.org/10.1016/j.comgeo.2023.101983</a>.
+        The shortcut hull algorithm can be used to produce travel-time visualization maps.<br>
+        In this application the goal is to obtain a region of the reachable areas starting from a location on a map and given a certain amount of time. Different parameters can give different maps, such as the means of transportation (car, bus, train,...).<br>
+        First we create a tree of the reachable points of the map, then we can use the shortcut hull algorithm to transform this tree in regions for a better visualization.<br>
+        We made a handcrafted tree that could be the result of the first part of the creation of such a map, it is named <i>tree</i> in the selector of polygon, feel free to play around with different values of \(\lambda\). The created tree is orthogonal in order to be comparable to the result obtained by Eva Dubar who worked in orthogonal hulls.<br>
+        For \(\lambda = 0.2\) we obtain the following result:
+    </p>
+
+    <img src="images/traveltimevisu.png" alt="Result of the algorithm on the example tree">
+
+    <p>
+        This result is acceptable, it roughly shows the region reachable from the center point. Real data would certainly give a more satisfying result, but such a tree is difficult to create by hand.<br>
+        We can also take a look at the example result given in [1]:
+    </p>
+
+    <img src="images/traveltimerealistic.png" alt="Example of travel time visualization from [1]">
+
+<!--    &lt;!&ndash; Helper to create new polygons&ndash;&gt;-->
+<!--    <div>-->
+<!--        Polygon creator helper-->
+<!--    </div>-->
+<!--    <div class="container">-->
+<!--        <div id="canvas1">-->
+<!--        </div>-->
+<!--    </div>-->
+    <p>
+        [1] Bonerath, Annika, Jan-Henrik Haunert, Joseph S. B. Mitchell, et Benjamin Niedermann. 2023. « Shortcut hulls: Vertex-restricted outer simplifications of polygons ». Computational Geometry 112 (juin): 101983. <a href="https://doi.org/10.1016/j.comgeo.2023.101983">https://doi.org/10.1016/j.comgeo.2023.101983</a>.
     </p>
     </main>
 </body>
