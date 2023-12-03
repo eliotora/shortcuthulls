@@ -197,7 +197,7 @@ class TreeNode {
             p.fill(124,185,232)
         }
 
-        p.text("(" + Math.round(this.x_cost) + "," + Math.round(this.y_cost) + ")", (this.vertices[0].x + this.vertices[1].x + this.vertices[2].x)/3, (this.vertices[0].y + this.vertices[1].y + this.vertices[2].y)/3)
+        // p.text("(" + Math.round(this.x_cost) + "," + Math.round(this.y_cost) + ")", (this.vertices[0].x + this.vertices[1].x + this.vertices[2].x)/3, (this.vertices[0].y + this.vertices[1].y + this.vertices[2].y)/3)
 
         for (let c of this.childrenL) {
             c.draw(p, lvl+1)
@@ -216,7 +216,6 @@ class TreeNode {
             } else if (this.childrenL.length === 0) {
                 A.set(this.e1, (1 - lambda) * polygon.cA(this.e1));
             } else {
-                console.log("Bah si ça arrive")
                 let min_x = Infinity;
                 for (let t of this.childrenL) {
                     t.compute_costs(polygon, A, I, lambda);
@@ -250,7 +249,6 @@ class TreeNode {
             } else if (this.childrenR.length === 0) {
                 A.set(this.e2, (1 - lambda) * polygon.cA(this.e2));
             } else {
-                console.log("Bah si ça arrive")
                 let min_x = Infinity;
                 for (let t of this.childrenR) {
                     t.compute_costs(polygon, A, I, lambda);
@@ -294,7 +292,7 @@ class TreeNode {
         this.y_cost = Math.min(A.get(this.e1) + lambda * polygon.cp(this.e1), I.get(this.e1))
             + Math.min(A.get(this.e2) + lambda * polygon.cp(this.e2), I.get(this.e2))
 
-        console.log(A.get(this.e1), I.get(this.e1) + lambda * polygon.cp(this.e1), A.get(this.e2), I.get(this.e2) + lambda * polygon.cp(this.e2))
+        // console.log(A.get(this.e1), I.get(this.e1) + lambda * polygon.cp(this.e1), A.get(this.e2), I.get(this.e2) + lambda * polygon.cp(this.e2))
 
         // A.set(this.e, [
         //     A.get(this.e),

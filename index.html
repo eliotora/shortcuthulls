@@ -12,13 +12,33 @@
     <script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script> <!-- From https://github.com/mapbox/delaunator Not used-->
     <script src="https://unpkg.com/earcut@2.2.4/dist/earcut.dev.js"></script> <!-- https://github.com/mapbox/earcut -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create three equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 33.33%;
+            padding: 10px;
+            /*height: 300px; !* Should be removed. Only for demonstration *!*/
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
 </head>
 <body>
 <main>
     <h1>Shortcut hulls</h1>
     <p>
         The idea behind shortcut hulls is to do a simplification of the given polygon in order to, for example, reduce its size (in terms of space complexity).
-        Say you want to use a map of Belgium, the frontiers are given to you in the form of a polygon; but the polygon contains a lot of points and can take more time (and space) than necessary for you use.
+        Say you want to use a map of Belgium, the frontiers are given to you in the form of a polygon; but the polygon contains a lot of points and can take more time (and space) than necessary for your use.
         Using shortcut hulls you can get a simplified version of you polygon that keeps most of the geometrical features of the original.
     </p>
 
@@ -40,70 +60,171 @@
 
     <h2>Shortcut Hulls without holes</h2>
     <p>
-        We can compute a shortcut hull without holes in \(O(n^2)\) time, the problem can be simplified to a shortest path in a directed acyclic graph which can be solved in \(O(n)\) time if the polygon is weakly simple and \(O(n^2)\) otherwise.
+        We can compute a shortcut hull without holes in \(O(n^2)\) time, the problem can be simplified to a shortest path in a directed acyclic graph which can be solved in \(O(n)\) time if the shortcuts do not cross each other and \(O(n^2)\) otherwise.
     </p>
     <h2>
         Shortcut hull demo
     </h2>
     <p>
-        In this section you can choose a polygon, visualize the admissible shortcuts of the polygon, and see a dynamic computation of the shortcut hull with your choice of \(lambda\).
+        In this section you can choose a polygon, visualize the admissible shortcuts of the polygon, and see a dynamic computation of the shortcut hull with your choice of \(\lambda\).
     </p>
-    <!-- Polygon selector -->
-    <label for="polygon">Choose a polygon to treat: </label>
-    <select name="polygon" id="polygon">
-    </select>
-    <script src="geometry_tools/polygon.js"></script>
-
-    <div class="container">
-        <div id="polygon_preview"></div>
-    </div>
-    <script src="no_holes/polygon_preview.js"></script>
-
-    <h3>
-        All admissible shortcuts for the polygon
-    </h3>
-    <p>
-        Those are the admissible shortcuts with respect to the restriction given before.
-    </p>
-
-    <div class="container">
-        <div id="shortcuts"></div>
-    </div>
-    <script src="no_holes/shortcuts.js"></script>
-
-    <h3>
-        Dynamic computation of the shortcut hull for the given \(\lambda\)
-    </h3>
     <!-- Slider for a choice of lambda -->
     <div class="slidecontainer">
         <label for="lambdasketch2">Adjust \(\lambda\) to change the Shortcut hull.</label><input type="range" min="0" max="1" value="0.5" step="0.001" class="slider" id="lambdasketch2" style="width: 100%;">
     </div>
-    <p id="lambda2val">Lambda = 0.5</p>
+    <div class="row">
+        <div class="column">
+            <h3>
+                Polygon selected
+            </h3>
+            <!-- Polygon selector -->
+            <label for="polygon">Choose a polygon to treat: </label>
+            <select name="polygon" id="polygon">
+            </select>
+            <script src="geometry_tools/polygon.js"></script>
+        </div>
+        <div class="column">
+            <h3>
+                All admissible shortcuts for the polygon
+            </h3>
+            <p>
+                Those are the admissible shortcuts with respect to the restriction given before.
+            </p>
 
-    <!-- Canvas on which the shortcut hull is computed and drawn -->
-    <div class="container">
-        <div id="canvas2">
+
+        </div>
+        <div class="column">
+            <h3>
+                Dynamic computation of the shortcut hull for the given \(\lambda\)
+            </h3>
+
+            <p id="lambda2val">Lambda = 0.5</p>
+
+
         </div>
     </div>
-    <script src="no_holes/shortcuthullsketch.js"></script>
+
+    <div class="row">
+        <div class="column">
+            <div class="container">
+                <div id="polygon_preview"></div>
+            </div>
+            <script src="no_holes/polygon_preview.js"></script>
+        </div>
+        <div class="column">
+            <div class="container">
+                <div id="shortcuts"></div>
+            </div>
+            <script src="no_holes/shortcuts.js"></script>
+        </div>
+        <div class="column">
+            <!-- Canvas on which the shortcut hull is computed and drawn -->
+            <div class="container">
+                <div id="canvas2">
+                </div>
+            </div>
+            <script src="no_holes/shortcuthullsketch.js"></script>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <h3>
+            How does it work?
+        </h3>
+
+        <p>
+            We assign a weight to each edge of the polygon as well as to each shortcut.
+            The weight corresponds to the cost of taking this edge in the final hull.<br>
+            The weight is computed as follow: \(c(e) = \lambda\cdot c_L(e) + (1-\lambda) \cdot c_A(P[e])\).<br>
+            Where \(c_L(e)\) is the part of the cost accounting for the length of the edge. For an edge of the polygon, it's just its length.
+            For a shortcut, it's the length of the edge minus the length of the path that is avoided by the shortcut.<br>
+            And \(c_A(P[e])\) is the part of the cost accounting for the area cost of the edge. \(P[e]\) is the pocket is the area enclosed by \(e\) and the path avoided by the shortcut.
+            Obviously, for an edge of the polygon, this area is equal to 0, therefore this part of the cost is 0. For a shortcut, it's the area of the pocket.
+            Here is an illustration of a pocket:
+        </p>
+        <img src="images/pocket_e.png" alt="Pocket of a shortcut on a polygon">
+        <p>
+            Once we have the weights for all the edges we only need to compute the shortest non-empty path from the topmost vertex to itself using the cost of each edge as the length of the edge. <br>
+            Note: the top most vertex is always part of the shortcut hull, the only vertices that won't be part of the shortcut hull are vertices that lies in a pocket. For the topmost vertex to lie in the pocket of an edge would mean that at least one vertex higher than the topmost vertex, which is a contradiction. <br>
+            Finding the shortest path can be solved in time \(O(|C|)\), when no two shortcut cross each other \(|C| = O(n)\), \(|C| = O(n^2)\) otherwise , \(n\) being the number of vertices.
+        </p>
+    </div>
 
     <h2>
         Shortcut hulls with holes
     </h2>
     <p>
-        Todo explain and implement it.
+        In this section we tried to implement the algorithm to compute shortcut hulls with holes, unsuccessfully.<br>
+        We will instead go through the process of the computation of a shortcut hull with holes explaining what should be done.<br>
+        The general idea to create a shortcut hull with holes is to triangulate the space outside the polygon and choose the triangle to put in the hull in order to minimize our optimization function.<br>
+        As a reminder the function we want to minimize is:
     </p>
+    $$c(Q) = \lambda \cdot c_P(Q) + (1-\lambda)\cdot c_A(Q)$$
+    <p>
+        First lets go through the process of the triangulation.<br>
+        To limit the space to triangulate we create a containing box around the polygon.
+        We also create an edge between the topmost vertex of the polygon to the top left vertex of our containing box and name this edge \(e^*\).<br>
+        Here is the result (the red edge links the polygon to the box):
+    </p>
+
     <div class="container">
-        <div id="containing_box_and_donut">
+        <div id="containing_box">
         </div>
     </div>
-    <script src="holes/containing_box_and_donut.js"></script>
+    <script src="holes/containing_box.js"></script>
+
+    <p>
+        Then we define the area contained between the polygon and the box as a new polygon.<br>
+        As we can see, this new polygon has a hole corresponding to our starting polygon, the edge \(e^*\) cuts the new polygon and links the hole to the exterior face.<br>
+        To fit its description this new polygon will be referred to as the sliced donut. <br>
+        We will then triangulate the sliced donut, here we did that using an external library (<a href="https://github.com/mapbox/earcut">earcut library</a>)
+    </p>
+
+<!--    <div class="container">-->
+<!--        <div id="containing_box_and_donut">-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <script src="holes/containing_box_and_donut.js"></script>-->
 
     <div class="container">
         <div id="triangulation">
         </div>
     </div>
     <script src="holes/triangulation.js"></script>
+
+    <p>
+        Now we create a dual graph in which each node is a triangle of the triangulation,this graph will be tree-shaped and the root should be one of the triangles that has \(e^*\) as an edge.<br>
+        Obviously this triangulation is not unique, multiple triangulations of the same polygon can be made. The part of the triangulation where this is interesting is where the triangles have a shortcut as an edge.<br>
+        When a node of the tree could have different triangles as children, we add all of them even if they are overlapping. <br>
+        Let's see an example:
+    </p>
+
+    <img src="images/triangulation.png" alt="Example of triangulation and tree">
+
+    <p>
+        On this example the figure (c) shows an example of a tree of triangles with root \(\rho\) but as we can see in figure (a) some shortcuts are not part of the triangulation.<br>
+        Indeed, we have multiple options of child triangle of \(u\) and the represented tree is only one of the options.<br>
+        In order to create our shortcut hull we need to compute the cost of each triangle in terms of perimeter and of area.
+        Then we will be able to choose if the triangle is part of the hull, it will be marked as active or if it is not, it will then be marked as inactive.<br>
+        When the area enclosed by a triangle is easy to define, the cost in terms of perimeter is harder.
+        If two adjacent triangles are active, their common edge won't count in the perimeter cost, same if the two triangles are inactive.
+        If one of them is active and the other is inactive, the edge will count towards the cost in terms of perimeter.
+        Edges of a triangle that are part of the polygon counts only if the triangle is inactive.<br>
+        To build our shortcut hull we compute the active cost \(x_{\Delta}\) of the triangle and the inactive cost \(y_{\Delta}\) of the triangle for a triangle \(\Delta = (e, e_1, e_2)\).
+        To help us we also define two tables: \(A\) and \(I\) that will hold for each edge the minimum cost of a triangle incident to \(e\) going down the tree, such that in \(A\) the cost will be computed as if the triangle were active and in \(I\) the cost will be computed as if the triangle were inactive.
+        Here are the formulas:
+    </p>
+
+    $$x_{\Delta} = \sum_{i \in \{1,2\}} \min\{A[e_i], I[e_i] + \lambda c_p(e_i)\}$$
+    $$y_{\Delta} = \sum_{i \in \{1,2\}} \min\{A[e_i]  + \lambda c_p(e_i), I[e_i]\}$$
+
+    <img src="images/A.png" alt="Equations for the table A" style="width:400px;height:100px;">
+    <img src="images/I.png" alt="Equations for the table I" style="width:400px;height:80px;">
+
+    <p>
+        By computing those values for each triangle of the tree bottom-up we should be capable of creating a unique shortcut hull with holes of the polygon for a given value of \(\lambda\).
+    </p>
 
     <div class="slidecontainer">
         <label for="lambdasketch">Adjust \(\lambda\) to change the Shortcut hull.</label><input type="range" min="0" max="1" value="0.5" step="0.001" class="slider" id="lambdasketch" style="width: 100%;">

@@ -18,26 +18,43 @@ const shortcuthullsketch = function (p) {
         canvas2.mousePressed(p.click);
 
         this.poly = create_polygon(document.getElementById("polygon").value);
+        this.sc_hull = undefined;
         p.noLoop();
+        p.click();
     }
 
     p.draw = function () {
         // Draw base of the canvas
         p.background(220);
-        p.stroke(p.color("black"));
+
 
         // Draw each vertex of the polygon
+        p.stroke(p.color("black"));
         p.strokeWeight(6)
         for (let v of this.poly.vertex) {
             p.point(v.x, v.y);
         }
 
         // Draw each edge if the polygon
+
+        p.stroke(p.color("black"))
         p.strokeWeight(4);
         for (let l of this.poly.edges) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
 
+        // Draw the shortcut hull
+        p.stroke(p.color("red"));
+        p.fill(p.color(255,140,25,100));
+        // p.fill(p.color("orange"));
+        p.beginShape();
+        p.strokeWeight(2);
+        for (let e of this.sc_hull) {
+            p.vertex(e.start.x, e.start.y);
+            p.line(e.start.x, e.start.y, e.end.x, e.end.y);
+        }
+        p.endShape(p.CLOSE);
+        p.noFill();
         // Draw the possible shortcuts of the polygon
         // p.stroke(p.color("red"));
         // for (let c of p.poly.shortcuts) {
@@ -46,22 +63,13 @@ const shortcuthullsketch = function (p) {
     }
 
     p.click = function() {
-        // Activates when the canvas is clicked
-        // console.log("Computing shortcut hull with a lambda value of " + lambda);
-
         // Compute the shortcut hull of the polygon given the lambda from the slider
-        let sc_hull = this.poly.findShortcutHull(lambda);
-        // console.log("Shortcut hull of size: " + sc_hull.length);
+        this.sc_hull = this.poly.findShortcutHull(lambda);
 
         // Redraw everything
         p.draw();
 
-        // Draw the shortcut hull
-        p.stroke(p.color("red"));
-        for (let e of sc_hull) {
-            // console.log(e.start, e.end);
-            p.line(e.start.x, e.start.y, e.end.x, e.end.y);
-        }
+
     }
 
     p.change_poly = change_poly;

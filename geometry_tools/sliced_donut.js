@@ -12,7 +12,7 @@ class Sliced_donut {
 
         // First the box
         this.vertex = box.vertex;
-        this.edges = box.edges;
+        this.edges = [...box.edges];
         this.vertex.push(box.vertex[0]);
         // Ingoing link with polygon
         this.edges.push(new Line(box.vertex[0], top_v));

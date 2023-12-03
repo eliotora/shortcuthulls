@@ -1,13 +1,13 @@
-const containing_box_and_donut = function (p) {
+const containing_box = function (p) {
     p.setup = function () {
         const canvas = p.createCanvas(400,400);
-        canvas.parent("containing_box_and_donut");
+        canvas.parent("containing_box");
 
         this.poly = create_polygon(document.getElementById("polygon").value);
         this.box = [new Vertex(0,0),
-                    new Vertex(canvas.width,0),
-                    new Vertex(canvas.width, canvas.height),
-                    new Vertex(0, canvas.height)];
+            new Vertex(canvas.width,0),
+            new Vertex(canvas.width, canvas.height),
+            new Vertex(0, canvas.height)];
         this.box = new Polygon(this.box);
         this.sliced_donut = new Sliced_donut(this.box, this.poly);
 
@@ -28,15 +28,7 @@ const containing_box_and_donut = function (p) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
 
-        p.stroke(p.color("yellow"));
-        p.strokeWeight(4);
-
-        for (let v of this.sliced_donut.vertex) {
-            p.point(v.x, v.y);
-        }
-        p.strokeWeight(2);
-
-        for (let l of this.sliced_donut.edges) {
+        for (let l of this.box.edges) {
             p.line(l.start.x, l.start.y, l.end.x, l.end.y);
         }
 
@@ -46,4 +38,4 @@ const containing_box_and_donut = function (p) {
 
     p.change_poly = change_poly;
 }
-const box_donut_sketch = new p5(containing_box_and_donut);
+const box_sketch = new p5(containing_box);
