@@ -17,15 +17,12 @@
             box-sizing: border-box;
         }
 
-        /* Create three equal columns that floats next to each other */
         .column {
             float: left;
             width: 33.33%;
             padding: 10px;
-            /*height: 300px; !* Should be removed. Only for demonstration *!*/
         }
 
-        /* Clear floats after the columns */
         .row:after {
             content: "";
             display: table;
@@ -35,7 +32,8 @@
 </head>
 <body>
 <main>
-    <h1>Shortcut hulls</h1>
+    <h1>INFO-F420 Computational Geometry Project: Shortcut hulls</h1>
+    <h2>Author: Eliot Cosyn, StudentID: 000494191, Teacher: LANGERMAN F. SWARZBERG Stefan, Year: 2023</h2>
     <p>
         Every figure and equation except the script and their results are from [<a href="#citations">1</a>] unless another source is specified.
     </p>
@@ -260,6 +258,15 @@
     </p>
 
     <img src="images/traveltimerealistic.png" alt="Example of travel time visualization from [1]">
+
+    <h2>
+        Possible improvements
+    </h2>
+    <p>
+        In order to finish this project, we should start over the algorithm of shortcut hulls with holes with more knowledge on the necessary data structures and computations.<br>
+        For each polygon example proposed, all shortcut were found and encoded by hand. Any algorithm finding all possible shortcuts fitting the definition would greatly improve the accessibility of the project.<br>
+        The tree generation of the travel-time visualization maps could be done to offer better examples to the reader.
+    </p>
 
 <!--    &lt;!&ndash; Helper to create new polygons&ndash;&gt;-->
 <!--    <div>-->
